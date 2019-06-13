@@ -1,0 +1,14 @@
+version: '3'
+services:
+  server:
+    container_name: gocd-server
+    ports:
+      - 8153:8153
+      - 8154:8154
+    image: gocd/gocd-server:v19.3.0
+  agent:
+    image: getgauge/gocd-jdk-mvn-node:latest
+    environment:
+      - GO_SERVER_URL="https://gocd-server:8154/go"
+    links:
+      - server:gocd-server

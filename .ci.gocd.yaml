@@ -1,0 +1,70 @@
+format_version: 3
+pipelines:
+  testSpring:
+    group: Spring
+    label_template: ${COUNT}
+    lock_behavior: none
+    display_order: -1
+    materials:
+      git:
+        git: https://github.com/infinityc2/Tutorial-CRUD-using-Spring-Boot.git
+        shallow_clone: false
+        auto_update: true
+        branch: master
+    stages:
+    - defaultStage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+        jobs:
+          defaultJob:
+            timeout: 0
+            tasks:
+            - exec:
+                arguments:
+                - test
+                command: mvn
+                run_if: passed
+    - buildStage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+        jobs:
+          buildJob:
+            timeout: 0
+            tasks:
+            - exec:
+                arguments:
+                - package
+                command: mvn
+                run_if: passed
+  serverPipeline:
+    group: Spring
+    label_template: ${COUNT}
+    lock_behavior: none
+    display_order: -1
+    materials:
+      testSpring:
+        pipeline: testSpring
+        stage: buildStage
+        name: testSpring
+    stages:
+    - defaultStage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+        jobs:
+          defaultJob:
+            timeout: 0
+            tasks:
+            - exec:
+                arguments:
+                - -al
+                command: ls
+                run_if: passed
